@@ -1671,6 +1671,7 @@ function launchCoins(from, to, count) {
 // ───── INIT ─────
 
 function init() {
+  initRoomEntry();
   initColorPicker();
   renderLobby();
 
