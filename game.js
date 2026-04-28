@@ -7,6 +7,7 @@ const SERVER_URL = window.FREEBET_SERVER || 'https://freebet-production.up.railw
 
 let socket          = null;
 let roomCode        = null;
+let localPlayerId   = null; // set when this device sits down
 let _applyingRemote = false; // prevent push loops
 
 // Map ↔ JSON helpers (state.bet.participants is a Map)
@@ -630,6 +631,11 @@ function renderActions() {
   zone.innerHTML = '';
   if (!ap) return;
 
+  if (roomCode && localPlayerId && state.activePlayerId !== localPlayerId) {
+    zone.innerHTML = `<div class="action-hint">Waiting for ${escHtml(ap.name)}…</div>`;
+    return;
+  }
+
   // ── IDLE ──
   if (state.phase === 'IDLE') {
     zone.innerHTML = `
@@ -804,9 +810,16 @@ function renderActions() {
 
 function renderPlayerSwitcher() {
   const sel = document.getElementById('active-select');
-  sel.innerHTML = state.players
-    .map(p => `<option value="${p.id}" ${p.id === state.activePlayerId ? 'selected' : ''}>${escHtml(p.name)} 🪙${p.coins}</option>`)
-    .join('');
+  if (roomCode && localPlayerId) {
+    const me = state.players.find(p => p.id === localPlayerId);
+    sel.innerHTML = me ? `<option>${escHtml(me.name)} 🪙${me.coins}</option>` : '';
+    sel.disabled = true;
+  } else {
+    sel.disabled = false;
+    sel.innerHTML = state.players
+      .map(p => `<option value="${p.id}" ${p.id === state.activePlayerId ? 'selected' : ''}>${escHtml(p.name)} 🪙${p.coins}</option>`)
+      .join('');
+  }
 }
 
 function renderLog() {
@@ -932,11 +945,13 @@ function joinLobby() {
   const glasses = document.getElementById('acc-glasses').classList.contains('active');
   const cigar   = document.getElementById('acc-cigar').classList.contains('active');
 
-  state.players.push({
+  const newPlayer = {
     id: uid(), name, color, coins: 20, seat: state.players.length,
     allTimeEarned: 0, glasses, cigar,
     wins: 0, betsPlayed: 0, currentStreak: 0, bestStreak: 0,
-  });
+  };
+  if (roomCode) localPlayerId = newPlayer.id;
+  state.players.push(newPlayer);
 
   nameEl.value = '';
   document.getElementById('acc-glasses').classList.remove('active');
