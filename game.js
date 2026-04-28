@@ -943,6 +943,7 @@ function joinLobby() {
   document.getElementById('acc-cigar').classList.remove('active');
   SFX.sitDown();
   renderLobby();
+  pushState();
 }
 
 function startGame() {
@@ -954,6 +955,7 @@ function startGame() {
   SFX.gameStart();
   renderGame();
   addLog(`<span class="log-name">FreeBet started</span> — ${state.players.length} players at the table. Let's go!`);
+  pushState();
 }
 
 // ───── BET CREATION ─────
