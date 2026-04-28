@@ -13,14 +13,55 @@
   <!-- ═══════════ ROOM ENTRY ═══════════ -->
   <div id="room-entry" class="screen active">
     <div class="re-bg">
+      <div class="re-pattern"></div>
+      <div class="re-beams">
+        <div class="re-beam rb1"></div>
+        <div class="re-beam rb2"></div>
+        <div class="re-beam rb3"></div>
+      </div>
       <div class="re-particles"></div>
       <div class="re-vignette"></div>
+      <div class="re-border-frame">
+        <span class="re-corner re-c-tl">✦</span>
+        <span class="re-corner re-c-tr">✦</span>
+        <span class="re-corner re-c-bl">✦</span>
+        <span class="re-corner re-c-br">✦</span>
+      </div>
 
       <div class="re-center">
         <!-- Logo -->
         <div class="re-logo-block">
+          <svg class="re-crest" viewBox="0 0 180 80" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <linearGradient id="cg" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stop-color="#fde88a"/>
+                <stop offset="50%" stop-color="#f0c040"/>
+                <stop offset="100%" stop-color="#9a7010"/>
+              </linearGradient>
+            </defs>
+            <path d="M10,68 L10,42 L46,16 L68,46 L90,4 L112,46 L134,16 L170,42 L170,68 Z" fill="url(#cg)"/>
+            <path d="M10,68 L10,42 L46,16 L68,46 L90,4 L112,46 L134,16 L170,42 L170,68 Z" fill="none" stroke="rgba(255,255,255,0.14)" stroke-width="1.2"/>
+            <rect x="6" y="65" width="168" height="11" rx="5.5" fill="url(#cg)"/>
+            <ellipse cx="90" cy="28" rx="10" ry="8" fill="#6a0000"/>
+            <ellipse cx="90" cy="28" rx="7.5" ry="6" fill="#b52020"/>
+            <ellipse cx="90" cy="28" rx="4.5" ry="3.5" fill="#e03030" opacity="0.85"/>
+            <ellipse cx="87.5" cy="25.5" rx="2.2" ry="1.6" fill="rgba(255,255,255,0.5)"/>
+            <ellipse cx="38" cy="44" rx="7" ry="6" fill="#05203a"/>
+            <ellipse cx="38" cy="44" rx="5" ry="4" fill="#1a5080"/>
+            <ellipse cx="36.5" cy="42.5" rx="1.8" ry="1.4" fill="rgba(255,255,255,0.38)"/>
+            <ellipse cx="142" cy="44" rx="7" ry="6" fill="#05203a"/>
+            <ellipse cx="142" cy="44" rx="5" ry="4" fill="#1a5080"/>
+            <ellipse cx="140.5" cy="42.5" rx="1.8" ry="1.4" fill="rgba(255,255,255,0.38)"/>
+            <circle cx="32" cy="70.5" r="4" fill="#fde88a" opacity="0.9"/>
+            <circle cx="90" cy="70.5" r="4" fill="#fde88a" opacity="0.9"/>
+            <circle cx="148" cy="70.5" r="4" fill="#fde88a" opacity="0.9"/>
+            <circle cx="90" cy="5" r="2.8" fill="#fde88a" opacity="0.85"/>
+            <circle cx="46" cy="17" r="1.8" fill="#fde88a" opacity="0.7"/>
+            <circle cx="134" cy="17" r="1.8" fill="#fde88a" opacity="0.7"/>
+          </svg>
           <div class="re-suits"><span class="suit-b">♠</span> &nbsp; <span class="suit-r">♥</span> &nbsp; <span class="suit-r">♦</span> &nbsp; <span class="suit-b">♣</span></div>
           <div class="re-logo">FreeBet</div>
+          <div class="re-orn-row"><span class="re-orn-line"></span><span class="re-orn-gem">◆</span><span class="re-orn-line"></span></div>
           <div class="re-tagline">Any Bet &nbsp;·&nbsp; Any Stakes &nbsp;·&nbsp; Any Time</div>
         </div>
 

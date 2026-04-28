@@ -15,16 +15,30 @@ html,body{width:100%;height:100vh;overflow:hidden;background:var(--bg);font-fami
 .screen.active{opacity:1;pointer-events:all;}
 
 /* ══════════ ROOM ENTRY ══════════ */
-.re-bg{width:100%;height:100%;position:relative;overflow:hidden;background:radial-gradient(ellipse 70% 70% at 50% 42%,#140a1e 0%,#05060a 100%);display:flex;align-items:center;justify-content:center;}
-.re-particles{position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(1.5px 1.5px at 15% 20%,rgba(240,192,64,0.5) 0%,transparent 100%),radial-gradient(1px 1px at 80% 14%,rgba(240,192,64,0.4) 0%,transparent 100%),radial-gradient(1px 1px at 60% 78%,rgba(240,192,64,0.3) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 25% 88%,rgba(240,192,64,0.45) 0%,transparent 100%),radial-gradient(1px 1px at 90% 55%,rgba(240,192,64,0.35) 0%,transparent 100%);}
-.re-vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 100% 100% at 50% 50%,transparent 40%,rgba(0,0,0,0.65) 100%);}
+.re-bg{width:100%;height:100%;position:relative;overflow:hidden;background:radial-gradient(ellipse 110% 60% at 50% 0%,rgba(130,18,18,0.55) 0%,transparent 55%),radial-gradient(ellipse 80% 50% at 50% 40%,rgba(70,8,8,0.3) 0%,transparent 65%),radial-gradient(ellipse 100% 100% at 50% 50%,#130205 0%,#080108 55%,#030005 100%);display:flex;align-items:center;justify-content:center;}
+.re-pattern{position:absolute;inset:0;pointer-events:none;background-image:repeating-linear-gradient(45deg,transparent 0,transparent 24px,rgba(180,140,40,0.028) 24px,rgba(180,140,40,0.028) 25px),repeating-linear-gradient(-45deg,transparent 0,transparent 24px,rgba(180,140,40,0.028) 24px,rgba(180,140,40,0.028) 25px);}
+.re-beams{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.re-beam{position:absolute;top:0;left:50%;transform-origin:top center;background:linear-gradient(180deg,rgba(210,150,20,0.1) 0%,transparent 75%);filter:blur(28px);}
+.rb1{width:220px;height:75%;transform:translateX(-50%) rotate(-28deg);}
+.rb2{width:120px;height:80%;transform:translateX(-50%);background:linear-gradient(180deg,rgba(230,170,30,0.14) 0%,transparent 70%);}
+.rb3{width:220px;height:75%;transform:translateX(-50%) rotate(28deg);}
+.re-particles{position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(1.5px 1.5px at 8% 12%,rgba(240,192,64,0.6) 0%,transparent 100%),radial-gradient(1px 1px at 78% 10%,rgba(240,192,64,0.5) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 92% 35%,rgba(240,192,64,0.45) 0%,transparent 100%),radial-gradient(1px 1px at 15% 55%,rgba(240,192,64,0.4) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 5% 80%,rgba(240,192,64,0.5) 0%,transparent 100%),radial-gradient(1px 1px at 60% 82%,rgba(240,192,64,0.35) 0%,transparent 100%),radial-gradient(1.5px 1.5px at 88% 75%,rgba(240,192,64,0.45) 0%,transparent 100%),radial-gradient(1px 1px at 35% 18%,rgba(240,192,64,0.4) 0%,transparent 100%),radial-gradient(1px 1px at 50% 92%,rgba(240,192,64,0.3) 0%,transparent 100%);}
+.re-vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 100% 100% at 50% 50%,transparent 35%,rgba(0,0,0,0.7) 100%);}
+.re-border-frame{position:absolute;inset:14px;pointer-events:none;border:1px solid rgba(240,192,64,0.18);box-shadow:inset 0 0 60px rgba(140,20,20,0.08);}
+.re-corner{position:absolute;color:rgba(240,192,64,0.55);font-size:0.75rem;line-height:1;}
+.re-c-tl{top:-7px;left:-7px;} .re-c-tr{top:-7px;right:-7px;} .re-c-bl{bottom:-7px;left:-7px;} .re-c-br{bottom:-7px;right:-7px;}
 .re-center{position:relative;z-index:2;text-align:center;padding:40px 24px;width:100%;max-width:780px;}
-.re-logo-block{margin-bottom:40px;}
-.re-suits{font-size:1.1rem;letter-spacing:0.5em;margin-bottom:8px;}
-.suit-b{color:rgba(220,220,220,0.8);}
-.suit-r{color:rgba(210,50,50,0.9);}
-.re-logo{font-family:'Cinzel Decorative','Cinzel',serif;font-weight:900;font-size:clamp(2.4rem,7vw,4rem);letter-spacing:0.1em;background:linear-gradient(160deg,#f0c040 0%,#fde88a 30%,#d4a010 55%,#f0c040 75%,#fde88a 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 28px rgba(240,192,64,0.22));}
-.re-tagline{font-size:0.82rem;color:#ffffff;letter-spacing:0.15em;font-weight:700;margin-top:6px;}
+.re-logo-block{margin-bottom:36px;position:relative;}
+.re-logo-block::before{content:'';position:absolute;inset:-30px -60px;background:radial-gradient(ellipse at 50% 55%,rgba(160,100,10,0.15) 0%,transparent 68%);pointer-events:none;}
+.re-crest{display:block;margin:0 auto 10px;filter:drop-shadow(0 4px 18px rgba(240,192,64,0.35));}
+.re-suits{font-size:1.05rem;letter-spacing:0.55em;margin-bottom:6px;}
+.suit-b{color:rgba(220,220,220,0.82);}
+.suit-r{color:rgba(210,50,50,0.92);}
+.re-logo{font-family:'Cinzel Decorative','Cinzel',serif;font-weight:900;font-size:clamp(3rem,8vw,5.2rem);letter-spacing:0.08em;background:linear-gradient(160deg,#fde88a 0%,#f8df70 20%,#f0c040 40%,#fde88a 55%,#c89010 72%,#f0c040 85%,#fde88a 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 50px rgba(240,192,64,0.5)) drop-shadow(0 6px 24px rgba(0,0,0,0.9));}
+.re-orn-row{display:flex;align-items:center;justify-content:center;gap:14px;margin:10px auto 6px;max-width:320px;}
+.re-orn-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(240,192,64,0.55),transparent);}
+.re-orn-gem{color:var(--gold);font-size:0.55rem;line-height:1;opacity:0.8;}
+.re-tagline{font-size:0.78rem;color:rgba(240,210,140,0.9);letter-spacing:0.22em;font-weight:700;text-transform:uppercase;}
 .re-cards-row{display:flex;align-items:stretch;justify-content:center;gap:0;flex-wrap:wrap;margin-bottom:24px;}
 .re-card{background:linear-gradient(160deg,rgba(14,9,4,0.97),rgba(8,5,2,0.97));border:1px solid rgba(240,192,64,0.18);border-radius:16px;padding:28px 28px 24px;width:280px;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;box-shadow:0 20px 60px rgba(0,0,0,0.8);}
 .re-card-bar{position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--gold),var(--gold2),var(--gold),transparent);}
