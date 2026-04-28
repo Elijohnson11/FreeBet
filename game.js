@@ -657,10 +657,15 @@ function renderActions() {
   zone.innerHTML = '';
   if (!ap) return;
 
-  if (roomCode && localPlayerId && state.activePlayerId !== localPlayerId) {
+  // In turn-based phases, non-active players wait. BET_ACTIVE is simultaneous — no gate.
+  const isTurnBased = ['IDLE', 'BETTING_ROUND', 'BET_CLOSED', 'RESOLVING'].includes(state.phase);
+  if (roomCode && localPlayerId && isTurnBased && state.activePlayerId !== localPlayerId) {
     zone.innerHTML = `<div class="action-hint">Waiting for ${escHtml(ap.name)}…</div>`;
     return;
   }
+
+  // In BET_ACTIVE multiplayer, each device acts as their own player
+  const me = (roomCode && localPlayerId) ? (getPlayer(localPlayerId) || ap) : ap;
 
   // ── IDLE ──
   if (state.phase === 'IDLE') {
@@ -673,10 +678,10 @@ function renderActions() {
 
   // ── BET ACTIVE (Classic mode) ──
   if (state.phase === 'BET_ACTIVE' && state.bet) {
-    const pData     = state.bet.participants.get(ap.id);
+    const pData     = state.bet.participants.get(me.id);
     const pStatus   = pData?.status;
     const pPick     = pData?.pick;
-    const isCreator = state.bet.creatorId === ap.id;
+    const isCreator = state.bet.creatorId === me.id;
 
     if (pStatus === undefined) {
       if (state.bet.type === 'OVER_UNDER') {
@@ -687,20 +692,20 @@ function renderActions() {
             <button class="btn-under" id="act-under">▼ UNDER</button>
           </div>
           <button class="btn-secondary" id="act-pass">Pass</button>`;
-        document.getElementById('act-over').addEventListener('click',  () => joinPickSide(ap.id, 'over'));
-        document.getElementById('act-under').addEventListener('click', () => joinPickSide(ap.id, 'under'));
-        document.getElementById('act-pass').addEventListener('click',  () => passBet(ap.id));
+        document.getElementById('act-over').addEventListener('click',  () => joinPickSide(me.id, 'over'));
+        document.getElementById('act-under').addEventListener('click', () => joinPickSide(me.id, 'under'));
+        document.getElementById('act-pass').addEventListener('click',  () => passBet(me.id));
       } else {
         zone.innerHTML = `
           <button class="btn-primary"   id="act-join">Join Bet (${state.bet.units} 🪙)</button>
           <button class="btn-secondary" id="act-pass">Pass</button>`;
-        document.getElementById('act-join').addEventListener('click', () => joinBet(ap.id));
-        document.getElementById('act-pass').addEventListener('click', () => passBet(ap.id));
+        document.getElementById('act-join').addEventListener('click', () => joinBet(me.id));
+        document.getElementById('act-pass').addEventListener('click', () => passBet(me.id));
       }
     } else if (pStatus === 'in') {
       if (isCreator) {
         let othersIn = 0;
-        state.bet.participants.forEach((d, pid) => { if (d.status === 'in' && pid !== ap.id) othersIn++; });
+        state.bet.participants.forEach((d, pid) => { if (d.status === 'in' && pid !== me.id) othersIn++; });
         if (othersIn > 0) {
           zone.innerHTML = `
             <button class="btn-danger" id="act-resolve">Resolve Bet →</button>
