@@ -275,6 +275,7 @@ function saveSession() {
         color:         p.color,
         glasses:       p.glasses  || false,
         cigar:         p.cigar    || false,
+        hat:           p.hat      || null,
         wins:          p.wins          || 0,
         betsPlayed:    p.betsPlayed    || 0,
         bestStreak:    p.bestStreak    || 0,
@@ -307,6 +308,7 @@ function rejoinPlayer(savedName) {
     seat:          state.players.length,
     glasses:       saved.glasses,
     cigar:         saved.cigar,
+    hat:           saved.hat || null,
     allTimeEarned: saved.allTimeEarned,
     wins:          saved.wins,
     betsPlayed:    saved.betsPlayed,
@@ -381,6 +383,33 @@ function characterSVG(shirtColor, size = 80, acc = {}) {
     <path d="M26,31 Q31,28 36,31" stroke="rgba(255,255,255,0.6)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
     <path d="M58,31 Q63,28 68,31" stroke="rgba(255,255,255,0.6)" stroke-width="2.2" fill="none" stroke-linecap="round"/>
   ` : '';
+
+  // ── HAT ──
+  let hatHTML = '';
+  if (acc.hat === 'tophat') {
+    hatHTML = `
+      <ellipse cx="50" cy="11" rx="32" ry="5.5" fill="#0f0f0a"/>
+      <rect x="29" y="0" width="42" height="12" rx="2" fill="#0f0f0a"/>
+      <rect x="29" y="9" width="42" height="4" fill="rgba(200,150,12,0.92)"/>
+      <rect x="29" y="0" width="11" height="12" rx="2" fill="rgba(255,255,255,0.05)"/>
+      <ellipse cx="50" cy="11" rx="32" ry="5.5" fill="none" stroke="rgba(255,255,255,0.07)" stroke-width="0.6"/>`;
+  } else if (acc.hat === 'cowboy') {
+    hatHTML = `
+      <ellipse cx="50" cy="13" rx="37" ry="6.5" fill="#7a5c0a"/>
+      <path d="M30,13 Q29,1 50,1 Q71,1 70,13 Z" fill="#9a7c1a"/>
+      <path d="M37,5 Q50,1 63,5" stroke="#6a4c08" stroke-width="2.5" fill="none" stroke-linecap="round"/>
+      <ellipse cx="50" cy="13" rx="21" ry="3" fill="rgba(45,28,4,0.85)"/>
+      <path d="M13,13 Q22,6 30,13" stroke="#8a6c18" stroke-width="5" fill="none" stroke-linecap="round"/>
+      <path d="M70,13 Q78,6 87,13" stroke="#8a6c18" stroke-width="5" fill="none" stroke-linecap="round"/>`;
+  } else if (acc.hat === 'cap') {
+    hatHTML = `
+      <path d="M17,17 Q16,1 50,1 Q84,1 83,17 Q67,12 50,12 Q33,12 17,17 Z" fill="${shirtColor}"/>
+      <path d="M17,17 Q33,23 52,21 Q34,17 17,17 Z" fill="rgba(0,0,0,0.28)"/>
+      <path d="M50,2 L50,12" stroke="rgba(255,255,255,0.15)" stroke-width="1" fill="none"/>
+      <path d="M32,4 Q42,9 50,12" stroke="rgba(255,255,255,0.11)" stroke-width="0.8" fill="none"/>
+      <path d="M68,4 Q58,9 50,12" stroke="rgba(255,255,255,0.11)" stroke-width="0.8" fill="none"/>
+      <circle cx="50" cy="2.5" r="2.5" fill="rgba(0,0,0,0.28)"/>`;
+  }
 
   // ── CIGAR — chunky, vivid ──
   const cigarHTML = acc.cigar ? `
@@ -500,6 +529,7 @@ function characterSVG(shirtColor, size = 80, acc = {}) {
   <circle cx="70" cy="57" r="3" fill="rgba(210,100,70,0.32)"/>
 
   ${cigarHTML}
+  ${hatHTML}
   </svg>`;
 }
 
@@ -526,7 +556,7 @@ function renderLobbySeats() {
     div.style.top   = pos.top;
     if (player) {
       div.innerHTML = `
-        <div class="lobby-seat-avatar occupied">${characterSVG(player.color, 42, { glasses: player.glasses, cigar: player.cigar })}</div>
+        <div class="lobby-seat-avatar occupied">${characterSVG(player.color, 42, { glasses: player.glasses, cigar: player.cigar, hat: player.hat })}</div>
         <div class="lobby-seat-name">${escHtml(player.name)}</div>`;
     } else {
       div.innerHTML = `
@@ -627,7 +657,7 @@ function renderCharacters() {
     div.innerHTML = `
       <div class="seat-chair" style="background:${chairBg}"></div>
       <div class="char-svg-wrap" style="position:relative">
-        ${characterSVG(player.color, 80, { glasses: player.glasses, cigar: player.cigar })}
+        ${characterSVG(player.color, 80, { glasses: player.glasses, cigar: player.cigar, hat: player.hat })}
         <div class="coin-badge">${player.coins}</div>
         ${committedBadge}
         ${pickBadge}
@@ -1007,10 +1037,11 @@ function joinLobby() {
   }
   const glasses = document.getElementById('acc-glasses').classList.contains('active');
   const cigar   = document.getElementById('acc-cigar').classList.contains('active');
+  const hat     = document.querySelector('.acc-hat-btn.active')?.dataset.hat || null;
 
   const newPlayer = {
     id: uid(), name, color, coins: 20, seat: state.players.length,
-    allTimeEarned: 0, glasses, cigar,
+    allTimeEarned: 0, glasses, cigar, hat,
     wins: 0, betsPlayed: 0, currentStreak: 0, bestStreak: 0,
   };
   if (roomCode) {
@@ -1022,6 +1053,7 @@ function joinLobby() {
   nameEl.value = '';
   document.getElementById('acc-glasses').classList.remove('active');
   document.getElementById('acc-cigar').classList.remove('active');
+  document.querySelectorAll('.acc-hat-btn').forEach(b => b.classList.remove('active'));
   SFX.sitDown();
   renderLobby();
   pushState();
@@ -1862,6 +1894,15 @@ function init() {
   ['acc-glasses', 'acc-cigar'].forEach(id => {
     document.getElementById(id).addEventListener('click', () => {
       document.getElementById(id).classList.toggle('active');
+    });
+  });
+
+  // Hat buttons — exclusive toggle (click active hat to deselect)
+  document.querySelectorAll('.acc-hat-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const wasActive = btn.classList.contains('active');
+      document.querySelectorAll('.acc-hat-btn').forEach(b => b.classList.remove('active'));
+      if (!wasActive) btn.classList.add('active');
     });
   });
 
