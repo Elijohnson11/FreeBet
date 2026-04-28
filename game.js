@@ -1444,7 +1444,7 @@ function handleLastPlayerStanding(winnerId) {
 // ───── RESOLVE BET ─────
 
 function openResolveBet() {
-  const ap  = getActivePlayer();
+  const ap  = (roomCode && localPlayerId) ? (getPlayer(localPlayerId) || getActivePlayer()) : getActivePlayer();
   const bet = state.bet;
   if (!ap || !bet || ap.id !== bet.creatorId) return;
 
