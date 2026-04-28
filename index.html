@@ -1,0 +1,360 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FreeBet</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;900&family=Cinzel+Decorative:wght@400;700;900&family=Abril+Fatface&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ═══════════ ROOM ENTRY ═══════════ -->
+  <div id="room-entry" class="screen active">
+    <div class="re-bg">
+      <div class="re-particles"></div>
+      <div class="re-vignette"></div>
+
+      <div class="re-center">
+        <!-- Logo -->
+        <div class="re-logo-block">
+          <div class="re-suits">♠ &nbsp; ♥ &nbsp; ♦ &nbsp; ♣</div>
+          <div class="re-logo">FreeBet</div>
+          <div class="re-tagline">Multiplayer · Real-Time</div>
+        </div>
+
+        <!-- Two cards: Create | Join -->
+        <div class="re-cards-row">
+
+          <!-- Create -->
+          <div class="re-card">
+            <div class="re-card-bar"></div>
+            <div class="re-card-icon">🎲</div>
+            <h2 class="re-card-title">Create Game</h2>
+            <p class="re-card-sub">Start a new table and share the code with friends.</p>
+            <button class="btn-gold re-btn" id="re-create-btn">Create Game →</button>
+          </div>
+
+          <div class="re-or">or</div>
+
+          <!-- Join -->
+          <div class="re-card">
+            <div class="re-card-bar"></div>
+            <div class="re-card-icon">🔑</div>
+            <h2 class="re-card-title">Join Game</h2>
+            <p class="re-card-sub">Have a code? Enter it below to join your crew.</p>
+            <input id="re-code-input" class="re-code-input" placeholder="Enter code…"
+                   maxlength="6" autocomplete="off" spellcheck="false"/>
+            <button class="btn-primary re-btn" id="re-join-btn">Join →</button>
+          </div>
+
+        </div>
+
+        <!-- Status / spinner / code display -->
+        <div id="re-status" class="re-status"></div>
+
+        <!-- Code display (shown after creating) -->
+        <div id="re-code-display" class="re-code-display" style="display:none">
+          <div class="re-code-label">Share this code with your friends</div>
+          <div class="re-code-value" id="re-code-value">------</div>
+          <button class="re-copy-btn" id="re-copy-btn">📋 Copy Link</button>
+          <div class="re-code-hint">Waiting for players… <span id="re-player-count">0</span> connected</div>
+          <button class="btn-gold re-btn" id="re-enter-lobby-btn" style="margin-top:16px">Enter Lobby →</button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ LOBBY ═══════════ -->
+  <div id="lobby" class="screen active">
+    <div class="lobby-bg">
+      <div class="lobby-particles"></div>
+
+      <div class="lobby-deco">
+        <div class="lobby-deco-corner ldc-tl"></div>
+        <div class="lobby-deco-corner ldc-tr"></div>
+        <div class="lobby-deco-corner ldc-bl"></div>
+        <div class="lobby-deco-corner ldc-br"></div>
+        <div class="lobby-deco-suit lds-tl">♠</div>
+        <div class="lobby-deco-suit lds-tr">♦</div>
+        <div class="lobby-deco-suit lds-bl">♣</div>
+        <div class="lobby-deco-suit lds-br">♥</div>
+        <div class="lobby-deco-radial"></div>
+        <div class="lobby-deco-hline lh-top"></div>
+        <div class="lobby-deco-hline lh-bot"></div>
+      </div>
+      <div class="lobby-vignette"></div>
+
+      <!-- ── Top Navigation ── -->
+      <nav class="lobby-nav">
+        <div class="nav-logo">♠ FreeBet</div>
+        <div class="nav-links">
+          <button class="nav-btn" id="nav-how">How to Play</button>
+          <button class="nav-btn" id="nav-about">About</button>
+          <button class="nav-btn" id="nav-login">Log In</button>
+          <button class="nav-btn nav-signup" id="nav-signup">Sign Up — Free</button>
+        </div>
+      </nav>
+
+      <div class="lobby-center">
+        <div class="logo-block">
+          <div class="logo-suits-row">♠ &nbsp; ♥ &nbsp; ♦ &nbsp; ♣</div>
+          <h1 class="game-title">FreeBet</h1>
+          <div class="title-underline"></div>
+          <p class="tagline">Any bet. Any stakes. One winner.</p>
+        </div>
+
+        <!-- ── Feature badges ── -->
+        <div class="lobby-features">
+          <div class="feat-badge">🃏 Any Bet, Any Stakes</div>
+          <div class="feat-badge">👥 Up to 5 Players</div>
+          <div class="feat-badge">⚡ Live &amp; Real-Time</div>
+          <div class="feat-badge">🏆 Track Your Record</div>
+        </div>
+
+        <div class="lobby-layout">
+          <div class="lobby-table-preview">
+            <div class="mini-table-wrap">
+              <div class="mini-table">
+                <div class="mini-bumper"></div>
+                <div class="mini-chip-rail"></div>
+                <div class="mini-felt">
+                  <div class="mini-logo">FreeBet</div>
+                </div>
+                <div id="lobby-seats"></div>
+              </div>
+            </div>
+          </div>
+          <div id="join-panel" class="card">
+            <div class="card-header-bar"></div>
+            <h2>Take a Seat</h2>
+            <input type="text" id="name-input" placeholder="Your name..." maxlength="16" autocomplete="off" spellcheck="false">
+            <div class="color-section">
+              <label>Shirt Color</label>
+              <div id="color-picker"></div>
+            </div>
+            <!-- Accessories -->
+            <div class="acc-section">
+              <label>Accessories</label>
+              <div class="acc-row">
+                <button type="button" class="acc-btn" id="acc-glasses">👓 Glasses</button>
+                <button type="button" class="acc-btn" id="acc-cigar">🚬 Cigar</button>
+              </div>
+            </div>
+            <button id="join-btn" class="btn-primary">Sit Down</button>
+            <div id="lobby-status"></div>
+            <button id="start-btn" class="btn-gold" style="display:none">Start the Game →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Footer ── -->
+      <footer class="lobby-footer">
+        <span class="footer-copy">© 2025 FreeBet</span>
+        <span class="footer-sep">·</span>
+        <button class="footer-link" id="footer-terms">Terms of Service</button>
+        <button class="footer-link" id="footer-privacy">Privacy Policy</button>
+        <button class="footer-link" id="footer-discord">Discord</button>
+        <button class="footer-link" id="footer-support">Support</button>
+      </footer>
+
+    </div>
+  </div>
+
+  <!-- ── Coming Soon toast ── -->
+  <div id="coming-toast" class="coming-toast" aria-live="polite"></div>
+
+  <!-- ═══════════ GAME SCREEN ═══════════ -->
+  <div id="game" class="screen">
+    <!-- Room -->
+    <div id="room">
+      <div class="room-ceiling">
+        <div class="ceiling-coffer c1"></div><div class="ceiling-coffer c2"></div><div class="ceiling-coffer c3"></div>
+        <div class="ceiling-medallion"></div><div class="ceiling-glow"></div>
+      </div>
+      <div class="crown-molding"></div>
+      <div class="room-wall-upper"></div>
+      <div class="room-wainscoting"></div>
+      <div class="chair-rail"></div>
+      <div class="curtain curtain-l"><div class="curtain-fold cf1"></div><div class="curtain-fold cf2"></div><div class="curtain-fold cf3"></div><div class="curtain-tie"></div></div>
+      <div class="curtain curtain-r"><div class="curtain-fold cf1"></div><div class="curtain-fold cf2"></div><div class="curtain-fold cf3"></div><div class="curtain-tie"></div></div>
+
+      <!-- Paintings — mountain / nature scenes -->
+      <div class="painting painting-l">
+        <div class="painting-frame"></div><div class="painting-mat"></div>
+        <div class="painting-art pa-l">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 84" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <linearGradient id="plSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#0c1828"/><stop offset="60%" stop-color="#1a3050"/><stop offset="100%" stop-color="#2a507a"/></linearGradient>
+              <linearGradient id="plM1" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#2e4868"/><stop offset="100%" stop-color="#1a2e48"/></linearGradient>
+              <linearGradient id="plM2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1e3228"/><stop offset="100%" stop-color="#0e1a14"/></linearGradient>
+            </defs>
+            <rect width="60" height="84" fill="url(#plSky)"/>
+            <circle cx="44" cy="14" r="5" fill="#f0e880" opacity="0.16"/><circle cx="44" cy="14" r="3" fill="#f8f4c0" opacity="0.5"/>
+            <circle cx="8" cy="8" r="0.7" fill="white" opacity="0.7"/><circle cx="19" cy="5" r="0.5" fill="white" opacity="0.6"/><circle cx="31" cy="9" r="0.6" fill="white" opacity="0.65"/><circle cx="52" cy="7" r="0.7" fill="white" opacity="0.5"/><circle cx="14" cy="15" r="0.5" fill="white" opacity="0.5"/>
+            <path d="M-2,52 L8,28 L16,40 L26,20 L36,36 L44,16 L54,36 L62,50 L62,52 Z" fill="url(#plM1)"/>
+            <path d="M26,20 L22,30 L30,30 Z" fill="rgba(255,255,255,0.35)"/><path d="M44,16 L40,26 L48,26 Z" fill="rgba(255,255,255,0.4)"/><path d="M8,28 L5,36 L11,36 Z" fill="rgba(255,255,255,0.28)"/>
+            <path d="M-2,64 L6,50 L14,57 L20,48 L28,54 L35,46 L42,52 L50,46 L58,52 L62,58 L62,64 Z" fill="url(#plM2)"/>
+            <path d="M5,64 Q8,56 11,64 Q14,56 17,64 Q20,56 23,64 Q26,56 29,64 Q32,56 35,64 Q38,56 41,64 Q44,56 47,64 Q50,56 53,64" stroke="#0a180c" stroke-width="4" fill="none"/>
+            <path d="M-2,84 Q15,70 30,76 Q45,70 62,84 Z" fill="#0c1810"/>
+            <path d="M5,80 Q30,73 55,80" stroke="rgba(80,140,190,0.25)" stroke-width="2" fill="none"/>
+            <path d="M10,83 Q30,77 50,83" stroke="rgba(80,140,190,0.18)" stroke-width="1.2" fill="none"/>
+          </svg>
+        </div>
+        <div class="painting-glare"></div><div class="painting-light"></div>
+      </div>
+      <div class="painting painting-r">
+        <div class="painting-frame"></div><div class="painting-mat"></div>
+        <div class="painting-art pa-r">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 60 84" width="100%" height="100%" preserveAspectRatio="xMidYMid slice">
+            <defs>
+              <linearGradient id="prSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1a0e28"/><stop offset="30%" stop-color="#3a1828"/><stop offset="58%" stop-color="#7a2e14"/><stop offset="78%" stop-color="#c05018"/><stop offset="100%" stop-color="#e88030"/></linearGradient>
+              <linearGradient id="prMt" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#3a2840"/><stop offset="100%" stop-color="#1e1428"/></linearGradient>
+            </defs>
+            <rect width="60" height="84" fill="url(#prSky)"/>
+            <ellipse cx="30" cy="58" rx="22" ry="14" fill="rgba(240,130,30,0.28)"/>
+            <circle cx="30" cy="56" r="8" fill="#f0a040" opacity="0.5"/>
+            <circle cx="4" cy="12" r="0.6" fill="white" opacity="0.5"/><circle cx="13" cy="6" r="0.7" fill="white" opacity="0.6"/><circle cx="48" cy="8" r="0.5" fill="white" opacity="0.45"/>
+            <path d="M-2,60 L10,34 L18,46 L28,24 L36,40 L46,28 L56,44 L62,54 L62,60 Z" fill="url(#prMt)"/>
+            <path d="M28,24 L24,36 L32,36 Z" fill="rgba(255,200,100,0.22)"/><path d="M46,28 L42,38 L50,38 Z" fill="rgba(255,200,100,0.18)"/>
+            <path d="M-2,84 L-2,70 Q15,60 30,65 Q45,60 62,68 L62,84 Z" fill="#0e0c14"/>
+            <path d="M4,84 Q7,72 10,84 Q13,72 16,84 Q19,72 22,84 Q25,72 28,84 Q31,72 34,84 Q37,72 40,84 Q43,72 46,84 Q49,72 52,84" stroke="#090710" stroke-width="5" fill="none"/>
+            <path d="M8,77 Q30,70 52,77" stroke="rgba(240,130,30,0.22)" stroke-width="2" fill="none"/>
+          </svg>
+        </div>
+        <div class="painting-glare"></div><div class="painting-light"></div>
+      </div>
+
+      <div class="chandelier">
+        <div class="chand-ceiling-plate"></div><div class="chand-chain-main"></div>
+        <div class="chand-crown"><div class="chand-body"><div class="chand-arm ca-1"></div><div class="chand-arm ca-2"></div><div class="chand-arm ca-3"></div><div class="chand-arm ca-4"></div></div><div class="chand-ring"></div></div>
+        <div class="chand-pendants">
+          <div class="chand-pendant cp-c"><div class="chand-chain cp-chain"></div><div class="chand-bulb main-bulb"></div></div>
+          <div class="chand-pendant cp-1"><div class="chand-chain cp-chain"></div><div class="chand-bulb"></div></div>
+          <div class="chand-pendant cp-2"><div class="chand-chain cp-chain"></div><div class="chand-bulb"></div></div>
+          <div class="chand-pendant cp-3"><div class="chand-chain cp-chain"></div><div class="chand-bulb"></div></div>
+          <div class="chand-pendant cp-4"><div class="chand-chain cp-chain"></div><div class="chand-bulb"></div></div>
+        </div>
+        <div class="chand-glow"></div><div class="chand-beam"></div>
+      </div>
+      <div class="sconce sconce-l"><div class="sconce-backplate"></div><div class="sconce-arm-h"></div><div class="sconce-cup"></div><div class="sconce-candle"></div><div class="sconce-flame"></div><div class="sconce-glow"></div></div>
+      <div class="sconce sconce-r"><div class="sconce-backplate"></div><div class="sconce-arm-h"></div><div class="sconce-cup"></div><div class="sconce-candle"></div><div class="sconce-flame"></div><div class="sconce-glow"></div></div>
+
+
+
+      <!-- String lights -->
+      <div class="strng-lights">
+        <div class="sl-wire"></div>
+        <div class="sl-b sb1"></div><div class="sl-b sb2"></div><div class="sl-b sb3"></div>
+        <div class="sl-b sb4"></div><div class="sl-b sb5"></div><div class="sl-b sb6"></div>
+        <div class="sl-b sb7"></div><div class="sl-b sb8"></div>
+      </div>
+
+      <!-- Pub floor -->
+      <div class="pub-floor"></div>
+
+
+      <div class="light-pool pool-c"></div><div class="light-pool pool-l"></div><div class="light-pool pool-r"></div>
+    </div>
+
+    <!-- Top Bar -->
+    <div id="top-bar">
+      <span class="game-title-sm">♠ FreeBet</span>
+      <div id="player-switcher"><span class="switcher-label">Playing as</span><select id="active-select"></select></div>
+      <button id="lb-btn" class="btn-lb">🏆 Leaderboard</button>
+      <button id="mute-btn" class="btn-mute" title="Toggle sound">🔊</button>
+    </div>
+
+    <!-- Table Area -->
+    <div id="table-area">
+      <div id="table-wrap">
+        <div class="table-cast-shadow"></div>
+        <div id="table">
+          <!-- Real poker table layers: wood → bumper rail → chip groove → felt -->
+          <div class="rim-highlight"></div>
+          <div class="bumper-rail">
+            <div class="bumper-inner-edge"></div>
+          </div>
+          <div class="chip-rail">
+            <div class="chip-rail-groove"></div>
+            <div class="chip-dots"></div>
+          </div>
+          <div id="felt">
+            <div class="felt-texture"></div>
+            <div class="felt-inner-shadow"></div>
+            <!-- Seat arcs on felt -->
+            <div class="felt-arc felt-arc-0"></div><div class="felt-arc felt-arc-1"></div>
+            <div class="felt-arc felt-arc-2"></div><div class="felt-arc felt-arc-3"></div><div class="felt-arc felt-arc-4"></div>
+            <!-- Center content -->
+            <div id="pot-zone">
+              <div id="pot-coins-display"></div>
+              <div id="pot-amount"></div>
+              <div id="freebet-felt-label">FreeBet</div>
+              <div id="bet-level-display"></div>
+            </div>
+            <div id="bet-topic-display"></div>
+            <div id="ou-live"></div>
+          </div>
+          <div class="table-face"></div>
+        </div>
+        <div id="characters-layer"></div>
+      </div>
+    </div>
+
+    <!-- Bottom Panel -->
+    <div id="bottom-panel">
+      <div id="game-log-wrap"><div id="game-log"></div></div>
+      <div id="action-zone"></div>
+    </div>
+
+    <!-- Leaderboard -->
+    <div id="lb-backdrop" class="lb-hidden"></div>
+    <div id="lb-panel" class="lb-hidden">
+      <div id="lb-header"><h2>♠ FreeBet Leaderboard</h2><button id="lb-close">✕</button></div>
+      <div id="lb-subtitle">Season Stats</div>
+      <div id="lb-list"></div>
+    </div>
+  </div>
+
+  <!-- ═══════════ ALL BETS PLACED BANNER ═══════════ -->
+  <div id="all-bets-banner">
+    <div class="abb-sparkles">✦ ✦ ✦</div>
+    <div class="abb-icon">🎲</div>
+    <div class="abb-title">All Bets Are Placed!</div>
+    <div class="abb-sub">Creator — time to call it</div>
+    <div class="abb-sparkles">✦ ✦ ✦</div>
+  </div>
+
+  <!-- ═══════════ WINNER OVERLAY ═══════════ -->
+  <div id="winner-overlay" class="wo-hidden">
+    <div id="winner-particles"></div>
+    <div id="winner-rays"></div>
+    <div id="winner-card">
+      <div id="winner-glow-ring"></div>
+      <div id="winner-suits-top">♠ &nbsp; ♥ &nbsp; ♦ &nbsp; ♣</div>
+      <div id="winner-trophy">🏆</div>
+      <div id="winner-label">FREEBET WINNER</div>
+      <div id="winner-names"></div>
+      <div id="winner-owe"></div>
+      <div id="winner-coins-earned"></div>
+      <div id="winner-suits-bot">♣ &nbsp; ♦ &nbsp; ♥ &nbsp; ♠</div>
+      <button id="winner-continue">Continue →</button>
+    </div>
+  </div>
+
+  <!-- ═══════════ MODAL ═══════════ -->
+  <div id="modal-overlay">
+    <div id="modal">
+      <button id="modal-close">✕</button>
+      <div id="modal-body"></div>
+    </div>
+  </div>
+
+</div>
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script src="sounds.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
