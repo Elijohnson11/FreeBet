@@ -566,10 +566,18 @@ function renderCharacters() {
   const layer = document.getElementById('characters-layer');
   layer.innerHTML = '';
 
+  const n          = state.players.length;
+  const localPlayer = localPlayerId ? state.players.find(p => p.id === localPlayerId) : null;
+  const myLogicalSeat = localPlayer ? localPlayer.seat : 0;
+
   state.players.forEach(player => {
+    const displaySeat = localPlayer
+      ? (player.seat - myLogicalSeat + n) % n
+      : player.seat;
+
     const div       = document.createElement('div');
     div.className   = 'seat-char';
-    div.dataset.seat = player.seat;
+    div.dataset.seat = displaySeat;
     div.dataset.id   = player.id;
 
     // Participant data
