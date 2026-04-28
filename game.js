@@ -112,7 +112,7 @@ function initRoomEntry() {
     connectSocket(() => {
       socket.emit('create-room', ({ code }) => {
         roomCode = code;
-        // Show code display, hide cards row
+        sessionStorage.setItem('freebet_room', code);
         document.querySelector('.re-cards-row').style.display = 'none';
         codeDisplay.style.display = 'flex';
         codeDisplay.style.flexDirection = 'column';
@@ -140,7 +140,7 @@ function initRoomEntry() {
           return;
         }
         roomCode = code;
-        // If game already started, apply existing state
+        sessionStorage.setItem('freebet_room', code);
         if (serverState) applyRemoteState(serverState);
         enterLobbyFromEntry();
       });
@@ -173,8 +173,34 @@ function initRoomEntry() {
   const urlCode = new URLSearchParams(location.search).get('code');
   if (urlCode) {
     codeInput.value = urlCode.toUpperCase();
-    // Small delay so UI renders first
     setTimeout(doJoin, 300);
+    return;
+  }
+
+  // ── Reconnect after refresh ──
+  const savedRoom   = sessionStorage.getItem('freebet_room');
+  const savedPlayer = sessionStorage.getItem('freebet_player');
+  if (savedRoom) {
+    connectSocket(() => {
+      socket.emit('join-room', { code: savedRoom }, ({ ok, error, state: serverState }) => {
+        if (error) {
+          sessionStorage.removeItem('freebet_room');
+          sessionStorage.removeItem('freebet_player');
+          return;
+        }
+        roomCode = savedRoom;
+        if (savedPlayer) localPlayerId = savedPlayer;
+        if (serverState) applyRemoteState(serverState);
+        // Go straight to game or lobby based on current phase
+        document.getElementById('room-entry').classList.remove('active');
+        const incoming = serverState ? deserializeState(serverState) : null;
+        if (incoming && incoming.phase !== 'LOBBY') {
+          document.getElementById('game').classList.add('active');
+        } else {
+          document.getElementById('lobby').classList.add('active');
+        }
+      });
+    });
   }
 }
 
@@ -950,7 +976,10 @@ function joinLobby() {
     allTimeEarned: 0, glasses, cigar,
     wins: 0, betsPlayed: 0, currentStreak: 0, bestStreak: 0,
   };
-  if (roomCode) localPlayerId = newPlayer.id;
+  if (roomCode) {
+    localPlayerId = newPlayer.id;
+    sessionStorage.setItem('freebet_player', newPlayer.id);
+  }
   state.players.push(newPlayer);
 
   nameEl.value = '';
@@ -1110,6 +1139,7 @@ function submitCreateBet() {
     addLog(`Wagering <span class="log-gold">${units} ${escHtml(currency)}</span> each.`);
     renderGame();
     animateCoinsToCenter(ap.id, units);
+    pushState();
 
   } else {
     // ── POKER MODE ──
@@ -1141,6 +1171,7 @@ function submitCreateBet() {
     addLog(`🃏 Poker round — opening bet: <span class="log-gold">${units} ${escHtml(currency)}</span>. ${escHtml(getPlayer(actingOrder[0])?.name || '')} acts first.`);
     renderGame();
     animateCoinsToCenter(ap.id, units);
+    pushState();
   }
 }
 
@@ -1161,6 +1192,7 @@ function joinBet(playerId) {
   SFX.joinBet();
   renderGame();
   animateCoinsToCenter(playerId, state.bet.units);
+  pushState();
 }
 
 function joinPickSide(playerId, pick) {
@@ -1179,6 +1211,7 @@ function joinPickSide(playerId, pick) {
   if (pick === 'over') SFX.pickOver(); else SFX.pickUnder();
   renderGame();
   animateCoinsToCenter(playerId, state.bet.units);
+  pushState();
 }
 
 function passBet(playerId) {
@@ -1188,6 +1221,7 @@ function passBet(playerId) {
   addLog(`<span class="log-name">${escHtml(player.name)}</span> passed.`);
   SFX.pass();
   renderGame();
+  pushState();
 }
 
 // ───── POKER BETTING ROUND ─────
@@ -1255,6 +1289,7 @@ function advanceAction() {
   state.activePlayerId = bet.actingOrder[bet.actionIdx];
   renderGame();
   renderPlayerSwitcher();
+  pushState();
 }
 
 function pokerFold() {
@@ -1354,6 +1389,7 @@ function closeBettingRound() {
   SFX.drumRoll();
   renderGame();
   renderPlayerSwitcher();
+  pushState();
 }
 
 function handleLastPlayerStanding(winnerId) {
@@ -1373,6 +1409,7 @@ function handleLastPlayerStanding(winnerId) {
   winner.betsPlayed = (winner.betsPlayed || 0) + 1;
   addLog(`🃏 Everyone folded — <span class="log-name">${escHtml(winner.name)}</span> takes the pot of <span class="log-gold">${bet.potCoins} ${escHtml(bet.currency)}</span>!`);
   showWinnerOverlay([winner], bet, bet.potCoins);
+  pushState();
   setTimeout(() => SFX.fanfare(), 250);
   setTimeout(() => {
     SFX.coinsToWinner(Math.min(bet.potCoins, 12));
@@ -1400,6 +1437,7 @@ function openResolveBet() {
   state.phase = 'RESOLVING';
   SFX.drumRoll();
   renderGame();
+  pushState();
 
   if (bet.type === 'OVER_UNDER') {
     showModal(`
@@ -1448,6 +1486,7 @@ function cancelResolve() {
   state.phase = state.bet?.pokerMode ? 'BET_CLOSED' : 'BET_ACTIVE';
   hideModal();
   renderGame();
+  pushState();
 }
 
 function resolveOUBet(winningSide) {
@@ -1513,6 +1552,7 @@ function finalizeBet(winnerIds) {
   addLog(`🏆 <span class="log-name">${escHtml(nameList)}</span> won +<span class="log-gold">${perWinner} ${escHtml(bet.currency)}</span> each!`);
 
   hideModal();
+  pushState();
 
   // Show winner overlay (state.bet kept alive until dismissed)
   showWinnerOverlay(winners, bet, perWinner);
@@ -1620,7 +1660,8 @@ function dismissWinnerOverlay() {
   state.phase = 'IDLE';
   SFX.dismiss();
   renderGame();
-  renderLeaderboard(); // refresh if panel is open
+  renderLeaderboard();
+  pushState();
 }
 
 function createWinnerParticles() {
