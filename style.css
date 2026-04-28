@@ -20,9 +20,11 @@ html,body{width:100%;height:100vh;overflow:hidden;background:var(--bg);font-fami
 .re-vignette{position:absolute;inset:0;pointer-events:none;background:radial-gradient(ellipse 100% 100% at 50% 50%,transparent 40%,rgba(0,0,0,0.65) 100%);}
 .re-center{position:relative;z-index:2;text-align:center;padding:40px 24px;width:100%;max-width:780px;}
 .re-logo-block{margin-bottom:40px;}
-.re-suits{font-size:1.1rem;letter-spacing:0.5em;color:rgba(240,192,64,0.45);margin-bottom:8px;}
+.re-suits{font-size:1.1rem;letter-spacing:0.5em;margin-bottom:8px;}
+.suit-b{color:rgba(220,220,220,0.8);}
+.suit-r{color:rgba(210,50,50,0.9);}
 .re-logo{font-family:'Cinzel Decorative','Cinzel',serif;font-weight:900;font-size:clamp(2.4rem,7vw,4rem);letter-spacing:0.1em;background:linear-gradient(160deg,#f0c040 0%,#fde88a 30%,#d4a010 55%,#f0c040 75%,#fde88a 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 28px rgba(240,192,64,0.22));}
-.re-tagline{font-size:0.72rem;color:var(--text2);letter-spacing:0.3em;text-transform:uppercase;margin-top:6px;}
+.re-tagline{font-size:0.8rem;color:var(--text2);letter-spacing:0.1em;font-style:italic;margin-top:6px;}
 .re-cards-row{display:flex;align-items:stretch;justify-content:center;gap:0;flex-wrap:wrap;margin-bottom:24px;}
 .re-card{background:linear-gradient(160deg,rgba(14,9,4,0.97),rgba(8,5,2,0.97));border:1px solid rgba(240,192,64,0.18);border-radius:16px;padding:28px 28px 24px;width:280px;position:relative;overflow:hidden;display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;box-shadow:0 20px 60px rgba(0,0,0,0.8);}
 .re-card-bar{position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--gold),var(--gold2),var(--gold),transparent);}
