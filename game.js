@@ -3,9 +3,7 @@
 // ═══════════════════════════════════════════
 
 // ───── MULTIPLAYER / SOCKET ─────
-// Set this to your Railway server URL after deploying.
-// Example: 'https://freebet-server-production.up.railway.app'
-const SERVER_URL = window.FREEBET_SERVER || 'https://freebet-server-production.up.railway.app';
+const SERVER_URL = window.FREEBET_SERVER || 'https://freebet-production.up.railway.app';
 
 let socket          = null;
 let roomCode        = null;
