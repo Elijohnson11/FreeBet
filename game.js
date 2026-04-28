@@ -122,6 +122,10 @@ function initRoomEntry() {
       connectedCount = count;
       if (playerCountEl) playerCountEl.textContent = count;
     });
+
+    socket.on('reaction', ({ emoji, playerId }) => {
+      showReactionPopup(playerId, emoji);
+    });
   }
 
   // ── CREATE ──
@@ -1761,6 +1765,43 @@ function launchCoins(from, to, count) {
   }
 }
 
+// ───── REACTIONS ─────
+
+const REACTION_EMOJIS = ['🔥', '💀', '😬', '🤑', '👏'];
+
+function initReactionBar() {
+  const bar = document.getElementById('reaction-bar');
+  if (!bar) return;
+  bar.innerHTML = REACTION_EMOJIS.map(e =>
+    `<button class="reaction-btn" data-emoji="${e}" title="React">${e}</button>`
+  ).join('');
+  bar.querySelectorAll('.reaction-btn').forEach(btn => {
+    btn.addEventListener('click', () => sendReaction(btn.dataset.emoji));
+  });
+}
+
+function sendReaction(emoji) {
+  const me = (roomCode && localPlayerId) ? localPlayerId : state.activePlayerId;
+  if (!me) return;
+  showReactionPopup(me, emoji);
+  if (socket && roomCode) {
+    socket.emit('reaction', { emoji, playerId: me });
+  }
+}
+
+function showReactionPopup(playerId, emoji) {
+  const charEl = document.querySelector(`.seat-char[data-id="${playerId}"]`);
+  if (!charEl) return;
+  const rect   = charEl.getBoundingClientRect();
+  const popup  = document.createElement('div');
+  popup.className   = 'reaction-popup';
+  popup.textContent = emoji;
+  popup.style.left  = `${rect.left + rect.width / 2}px`;
+  popup.style.top   = `${rect.top}px`;
+  document.body.appendChild(popup);
+  setTimeout(() => popup.remove(), 2600);
+}
+
 // ───── INIT ─────
 
 function init() {
@@ -1775,6 +1816,8 @@ function init() {
   document.getElementById('lb-btn').addEventListener('click', toggleLeaderboard);
   document.getElementById('lb-close').addEventListener('click', toggleLeaderboard);
   document.getElementById('lb-backdrop').addEventListener('click', toggleLeaderboard);
+
+  initReactionBar();
 
   document.getElementById('name-input').addEventListener('keydown', e => {
     if (e.key === 'Enter') joinLobby();

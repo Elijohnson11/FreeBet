@@ -95,6 +95,12 @@ io.on('connection', (socket) => {
     socket.to(roomCode).emit('state-update', { state }); // broadcast
   });
 
+  // ── Reaction — relay emoji to room peers without storing in state ──
+  socket.on('reaction', ({ emoji, playerId }) => {
+    if (!roomCode) return;
+    socket.to(roomCode).emit('reaction', { emoji, playerId });
+  });
+
   // ── Disconnect ──
   socket.on('disconnect', () => {
     if (!roomCode) return;
