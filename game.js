@@ -50,6 +50,24 @@ function applyRemoteState(remote) {
     if (nowInGame) {
       renderGame();
       renderLog();
+      // Show winner overlay on this device if the resolver triggered it
+      if (incoming.winnerOverlay && incoming.bet) {
+        const overlay = document.getElementById('winner-overlay');
+        if (overlay.classList.contains('wo-hidden')) {
+          const { winnerIds, perWinner } = incoming.winnerOverlay;
+          const winners = winnerIds.map(id => state.players.find(p => p.id === id)).filter(Boolean);
+          if (winners.length) {
+            showWinnerOverlay(winners, incoming.bet, perWinner);
+            setTimeout(() => SFX.fanfare(), 250);
+            setTimeout(() => {
+              SFX.coinsToWinner(Math.min(perWinner, 12));
+              winners.forEach((w, i) => {
+                setTimeout(() => animateCoinsFromCenter(w.id, Math.min(perWinner, 8)), i * 280);
+              });
+            }, 500);
+          }
+        }
+      }
     } else {
       renderLobby();
     }
@@ -233,6 +251,7 @@ let state = {
   activePlayerId: null,
   bet:            null,
   log:            [],
+  winnerOverlay:  null,      // { winnerIds, perWinner } when a bet is resolved
 };
 
 let _raiseAmt = 0; // current raise-to amount shown in raise UI
@@ -657,21 +676,21 @@ function renderActions() {
   zone.innerHTML = '';
   if (!ap) return;
 
-  // In turn-based phases, non-active players wait. BET_ACTIVE is simultaneous — no gate.
-  const isTurnBased = ['IDLE', 'BETTING_ROUND', 'BET_CLOSED', 'RESOLVING'].includes(state.phase);
+  // In turn-based phases (not IDLE, not BET_ACTIVE), non-active players wait.
+  const isTurnBased = ['BETTING_ROUND', 'BET_CLOSED', 'RESOLVING'].includes(state.phase);
   if (roomCode && localPlayerId && isTurnBased && state.activePlayerId !== localPlayerId) {
     zone.innerHTML = `<div class="action-hint">Waiting for ${escHtml(ap.name)}…</div>`;
     return;
   }
 
-  // In BET_ACTIVE multiplayer, each device acts as their own player
+  // In multiplayer, each device always acts as their own player
   const me = (roomCode && localPlayerId) ? (getPlayer(localPlayerId) || ap) : ap;
 
   // ── IDLE ──
   if (state.phase === 'IDLE') {
     zone.innerHTML = `
       <button class="btn-gold" id="act-create">+ Create a Bet</button>
-      <div class="action-hint">${escHtml(ap.name)} — 🪙 ${ap.coins} coins</div>`;
+      <div class="action-hint">${escHtml(me.name)} — 🪙 ${me.coins} coins</div>`;
     document.getElementById('act-create').addEventListener('click', openCreateBet);
     return;
   }
@@ -1093,7 +1112,7 @@ function submitCreateBet() {
   const topic    = document.getElementById('bet-topic').value.trim();
   const currency = document.getElementById('bet-currency').value.trim();
   const units    = Math.max(1, Math.min(10, parseInt(document.getElementById('bet-units').value) || 1));
-  const ap       = getActivePlayer();
+  const ap       = (roomCode && localPlayerId) ? (getPlayer(localPlayerId) || getActivePlayer()) : getActivePlayer();
 
   if (!topic || !currency || !ap) return;
 
@@ -1556,6 +1575,7 @@ function finalizeBet(winnerIds) {
   const nameList = winners.map(w => w.name).join(' & ');
   addLog(`🏆 <span class="log-name">${escHtml(nameList)}</span> won +<span class="log-gold">${perWinner} ${escHtml(bet.currency)}</span> each!`);
 
+  state.winnerOverlay = { winnerIds, perWinner };
   hideModal();
   pushState();
 
@@ -1661,8 +1681,9 @@ function dismissWinnerOverlay() {
     if (crown) crown.remove();
   });
 
-  state.bet   = null;
-  state.phase = 'IDLE';
+  state.bet          = null;
+  state.phase        = 'IDLE';
+  state.winnerOverlay = null;
   SFX.dismiss();
   renderGame();
   renderLeaderboard();
