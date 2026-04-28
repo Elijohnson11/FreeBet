@@ -153,7 +153,7 @@ function initRoomEntry() {
     connectSocket(() => {
       socket.emit('join-room', { code }, ({ ok, error, state: serverState }) => {
         if (error) {
-          setStatus('⚠ ' + error, true);
+          setStatus('⚠ Room not found — double-check the code or ask the host to create a new game.', true);
           joinBtn.disabled = false;
           return;
         }
@@ -199,17 +199,18 @@ function initRoomEntry() {
   const savedRoom   = sessionStorage.getItem('freebet_room');
   const savedPlayer = sessionStorage.getItem('freebet_player');
   if (savedRoom) {
+    setStatus('Reconnecting…');
     connectSocket(() => {
       socket.emit('join-room', { code: savedRoom }, ({ ok, error, state: serverState }) => {
         if (error) {
           sessionStorage.removeItem('freebet_room');
           sessionStorage.removeItem('freebet_player');
+          setStatus('Session expired — create or join a new game.', false);
           return;
         }
         roomCode = savedRoom;
         if (savedPlayer) localPlayerId = savedPlayer;
         if (serverState) applyRemoteState(serverState);
-        // Go straight to game or lobby based on current phase
         document.getElementById('room-entry').classList.remove('active');
         const incoming = serverState ? deserializeState(serverState) : null;
         if (incoming && incoming.phase !== 'LOBBY') {
